@@ -50,29 +50,33 @@ module MakeConcrete (E: ERRORS) : INT_DOMAIN
     type err = E.t
     type t = Z.t
     let rec rand: Z.t -> Z.t -> t = fun a b -> assert false (* Leave empty *)
-    let of_int: Z.t -> t = fun x -> assert false
+    let of_int: Z.t -> t = fun x -> x
     let bin
         (f: Z.t -> Z.t -> Z.t)
         (a: t) (b: t)
         (ext: extent) : t add_bottom * err =
-      assert false
+      (Nb (f a b), E.empty)
     let add: t -> t -> extent -> t add_bottom * err = bin Z.add
     let sub: t -> t -> extent -> t add_bottom * err = bin Z.sub
     let times: t -> t -> extent -> t add_bottom * err = bin Z.mul
 
     let div: t -> t -> extent -> t add_bottom * err = fun a b ext ->
-      assert false
+      try
+        (Nb (Z.div a b), E.empty)
+      with Division_by_zero -> (Bot, E.error (E.make_err DivisionByZero "" ext))
     let modulo: t -> t -> extent -> t add_bottom * err = fun a b ext ->
-      assert false
+      try
+        (Nb (Z.rem a b), E.empty)
+      with Division_by_zero -> (Bot, E.error (E.make_err ModuloByZero "" ext))
 
-    let uplus: t -> extent -> t * err = fun a _ -> assert false
-    let uminus: t -> extent -> t * err = fun a _ -> assert false
+    let uplus: t -> extent -> t * err = fun a _ -> (a, E.empty)
+    let uminus: t -> extent -> t * err = fun a _ -> (Z.neg a, E.empty)
 
     let bin_bool
         (f: Z.t -> Z.t -> bool)
         (a: t) (b: t)
         (ext: extent) : bool * bool =
-      assert false
+      let x = (f a b) in x, (not x)
     let less: t -> t -> extent -> bool * bool = bin_bool Z.lt
     let less_eq: t -> t -> extent -> bool * bool = bin_bool Z.leq
     let greater: t -> t -> extent -> bool * bool = bin_bool Z.gt
@@ -81,7 +85,8 @@ module MakeConcrete (E: ERRORS) : INT_DOMAIN
     let not_eq: t -> t -> extent -> bool * bool =
       bin_bool (fun a b -> Z.equal a b |> not)
 
-    let pp: Format.formatter -> t -> unit = fun fmt t -> assert false
+    let pp: Format.formatter -> t -> unit = fun fmt t ->
+      Z.pp_print fmt t
 
     let union (a: t) (b: t) : t = assert false (* Leave empty *)
     let inter (a: t) (b: t) : t add_bottom = assert false (* Leave empty *)
