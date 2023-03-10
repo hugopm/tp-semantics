@@ -42,20 +42,21 @@ module MakeConcrete(E: ERRORS) : BOOL_DOMAIN
   (struct
     module E = E
     module C = Constrain.NoConstrain
-    type t (* TODO : type definition to complete *)
+    type t = bool
     type err = E.t
-    let can_be_true: t -> bool = assert false
-    let can_be_false: t -> bool = assert false
-    let cst_true: t = assert false
-    let cst_false: t = assert false
-    let of_bool x = assert false
-    let is_empty x = assert false
-    let logical_or: t -> t -> t = assert false
-    let logical_and: t -> t -> t = assert false
-    let logical_not: t -> t = assert false
-    let eq: t -> t -> t = assert false
-    let not_eq: t -> t -> t = assert false
-    let pp: Format.formatter -> t -> unit = fun fmt t -> assert false
+    let can_be_true: t -> bool = fun x -> x
+    let can_be_false: t -> bool = fun x -> (not x)
+    let cst_true: t = true
+    let cst_false: t = false
+    let of_bool: bool -> t = fun x -> x
+    let is_empty: t -> bool = fun x -> false
+    let logical_or: t -> t -> t = fun x y -> (x || y)
+    let logical_and: t -> t -> t = fun x y -> (x && y)
+    let logical_not: t -> t = not
+    let eq: t -> t -> t = fun x y -> (x == y)
+    let not_eq: t -> t -> t = fun x y -> (x <> y)
+    let pp: Format.formatter -> t -> unit = fun fmt t ->
+      Format.fprintf fmt (if t then "true" else "false")
     let union: t -> t -> t = fun a b -> assert false (* Leave empty *)
     let inter: t -> t -> t add_bottom = fun a b -> assert false (* Leave empty *)
     let narrow: t -> t -> t add_bottom = inter
