@@ -112,40 +112,60 @@ module MakeValueBasics
         ({int=ia; bool=ba}: ival)
         ({int=ib; bool=bb}: ival)
         (ext: extent) : ival * err =
-      assert false
+      match ia, ib, ba, bb with
+        | Nb iia, Nb iib, _, _ ->
+          {int=Bot; bool=Nb (B.of_bool (fst (fi iia iib ext)))}, E.empty
+        | _, _, Nb bba, Nb bbb ->
+          {int=Bot; bool=Nb (fb bba bbb)}, E.empty
+        | _ -> assert false (* TODO erreur *)
 
     let int_unary
         (f: I.t -> extent -> I.t * err)
         (a: ival)
         (ext: extent) : ival * err =
-      assert false
+      match a.int with
+      | Nb iia -> let res, e = (f iia ext) in
+        {int=Nb res; bool=Bot}, e
+      | Bot -> assert false (* TODO erreur *)
+
 
     let int_binary
         (fi: I.t -> I.t -> extent -> I.t add_bottom * err)
         ({int=ia; bool=ba}: ival)
         ({int=ib; bool=bb}: ival)
         (ext: extent) : ival * err =
-      assert false
+      match ia, ib with
+      | Nb iia, Nb iib -> let res, e = (fi iia iib ext) in
+        {int=res; bool=Bot}, e
+      | _ -> assert false (* TODO erreur *)
 
     let int_binary_bool
         (f: I.t -> I.t -> extent -> bool * bool)
         ({int=ia; bool=ba}: ival)
         ({int=ib; bool=bb}: ival)
         (ext: extent) : ival * err =
-      assert false
+        match ia, ib with
+        | Nb iia, Nb iib -> let res = (f iia iib ext) in
+          {int=Bot; bool=Nb (B.of_bool (fst res))}, E.empty
+        | _ -> assert false (* TODO erreur *)
 
     let bool_binary
         (fb: B.t -> B.t -> B.t)
         ({int=ia; bool=ba}: ival)
         ({int=ib; bool=bb}: ival)
         (ext: extent) : ival * err =
-      assert false
+      match ba, bb with
+      | Nb bba, Nb bbb -> let res = (fb bba bbb) in
+          {int=Bot; bool=Nb res}, E.empty
+      | _ -> assert false (* TODO erreur *)
 
     let bool_unary
         (fb: B.t -> B.t)
         ({int=ia; bool=ba}: ival)
         (ext: extent) : ival * err =
-      assert false
+      match ba with
+      | Nb bba -> {int=Bot; bool=Nb (fb bba)}, E.empty
+      | _ -> assert false (* TODO erreur *)
 
     let of_int (n: Z.t) : ival = assert false
     let of_bool (b: bool) : ival = assert false
