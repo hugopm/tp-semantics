@@ -169,15 +169,29 @@ module MakeValueBasics
 
     let of_int (n: Z.t) : ival = assert false
     let of_bool (b: bool) : ival = assert false
-    let rand (x: Z.t) (y: Z.t) : ival * err = assert false
+    let rand (x: Z.t) (y: Z.t) : ival * err =
+      let res = (I.rand x y) in
+      {int=Nb res; bool=Bot}, E.empty
     let can_be_true (a: ival) (ext: extent) : bool * err =
-      assert false
+      match a.bool with
+      | Nb bba -> B.can_be_true bba, E.empty
+      | _ -> assert false (* TODO erreur *)
 
     let can_be_false (a: ival) (ext: extent) : bool * err =
-      assert false
+      match a.bool with
+      | Nb bba -> B.can_be_false bba, E.empty
+      | _ -> assert false (* TODO erreur *)
 
     let pp_ival (fmt: Format.formatter) (a: ival) : unit =
-      assert false
+      Format.fprintf fmt "{int=";
+      (match a.int with
+      | Bot -> Format.fprintf fmt "Bot"
+      | Nb res -> I.pp fmt res);
+      Format.fprintf fmt "; bool=";
+      (match a.bool with
+      | Bot -> Format.fprintf fmt "Bot"
+      | Nb res -> B.pp fmt res);
+      Format.fprintf fmt "}"
 
     let union (a: ival) (b: ival) : ival =
       assert false (* Leave empty for TP1 *)
